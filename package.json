@@ -1,0 +1,18 @@
+{
+  "name": "baseserver",
+  "version": "1.0.0",
+  "description": "Base Server for Node.js and nginx",
+  "main": "nginx.sh",
+  "bin": {
+    "baseserver": "init.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Edward Gonzalez",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.13.4"
+  },
+  "devDependencies": {}
+}
