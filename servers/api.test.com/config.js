@@ -1,6 +1,8 @@
 module.exports = {
 	HIDDEN:true,
+
 	ERR404:null,
+	ERR502:null,
 
 	DYNAMIC:true,
 	DYNAMICHOST:[{

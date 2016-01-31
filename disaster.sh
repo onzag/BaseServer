@@ -1,9 +1,0 @@
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs
-killall -9 nodejs

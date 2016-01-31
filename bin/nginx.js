@@ -97,7 +97,8 @@ fs.readdirSync('./servers').forEach(function(domain){
 			
 			router += (lifetime ? "\n\t\texpires " + JSON.stringify(lifetime) + ";" : "") + 
 				"\n\t\troot " + process.cwd() + "/servers/" + domain + "/" + folder + ";" +
-				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "");
+				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "") +
+				(config.ERR502 ? ("\n\t\terror_page 502 " + config.ERR502 + ";") : "");
 
 			var headers = config.STATICHEADERS;
 			if (config.STATICHEADERS instanceof Array){

@@ -21,8 +21,16 @@ module.exports = {
 	HIDDEN:true,				//hidden from searching, crawling
 	HIDDEN:false,				//visible for search engines
 
-	ERR404:null,				//no 404 page redirection for unknown locations
-	ERR404:'/err/404.html',			//404 page
+	ERR404:null,				// no 404 page redirection for unknown locations
+	ERR404:'/err/404.html',			// 404 page
+
+	ERR502:null,				// no 502 page redirection
+	ERR502:'/err/502.html'			// 502 page
+
+						// note that only 404 and 502 are necessary because it's expected that
+						// the dynamic Node.js server will handle other error messages
+						// so 404 is basically only for static serving
+						// and 502 is for when all the gateways die
 
 	DYNAMIC:true,				//allow dyanmic interaction (proxy)
 
@@ -63,20 +71,22 @@ module.exports = {
 
 	STATICFOLDER:'staticfiles', 		//where to seek for static files, inside the server folder
 
-	STATICFOLDER:['/home/stuff/static/css','/home/stuff/static/general'], //and considering the previous STATICURL array option, the .css will match
-										//the first path and the static the second path
+	STATICFOLDER:['css','general'], 	//and considering the previous STATICURL array option, the .css will match
+						//the first path and the static the second path
+						//note that these folders must be inside the server folder
 
-	STATICLIFETIME:"1d",				//the lifetime of the cache
-	STATICLIFETIME:["1s","1d"],			//per url/location as well
+	STATICLIFETIME:"1d",			//the lifetime of the cache for everything
+	STATICLIFETIME:["1s","1d"],		//per url/location as well
+						//1 second for css, 1 day for things in the /static folder
 
-	STATICHEADERS:{					//headers to set for the static files
+	STATICHEADERS:{				//headers to set for the static files
 		'keep-alive':true
 	},
 	STATICHEADERS:[
 		{
-			'keep-alive':true		//headers to set only for the first url match
+			'keep-alive':true	//headers to set only for the first url match, eg. css
 		},
-		{}					//for the second
+		{}				//for the second, eg. general
 	]
 }
 ```
@@ -171,3 +181,16 @@ When you have your fresh copy of this base server the actions you should do are 
  9. Add a automated script to run `bash respawn.sh` in the directory of the scripts
  10. Start one server again and turn off your computer electricity, or cause a kernel panic, or just kill the process of the master process abruptly.
  11. Restart your computer, or just run `respawn.sh` and the server should be back to life.
+ 12. Modify your code live.
+ 13. Do `bash reload.sh myserver.com` and you should be able to see the updates
+
+## Add SSL support
+
+In order to add SSL support to a domain you must have your .key file to your file key and your certificate or .crt file to the security folder,
+and they must match the server domain/subdomain name, you can also use STAR certificates.
+
+For example if you have the domain `mydomain.com` and will to add a certificate to it, you need to add both, `mydomain.com.crt` and `mydomain.com.key` to
+the folder and they'll be used for the ssl configuration and port 443 will be opened, also if you have eg. `api.mydomain.com` or `user.mydomain.com` and
+you have a star certificate you just need `*.mydomain.com.crt` and `*.mydomain.com.key` placed into the security folder and so it'll activate SSL for such servers.
+
+Traffic comming from port 80 will then be redirected to SSL, remember to run `bash nginx.sh` in order to update the configuration.
