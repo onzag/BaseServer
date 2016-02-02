@@ -1,6 +1,6 @@
 {
   "name": "baseserver",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Base Server for Node.js and nginx",
   "main": "nginx.sh",
   "bin": {

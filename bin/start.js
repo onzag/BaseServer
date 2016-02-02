@@ -33,6 +33,9 @@ try {
 		logHandler = {
 			'log':function(type,data){
 				console.log(type,data);
+				if (type === 'uncaughtException' || type === 'instanceUncaughtException'){
+					console.error(data.err.stack);
+				}
 			},
 			'die':function(){
 				console.log('DEAD');
@@ -79,19 +82,55 @@ process.on('uncaughtException',function(err){
 
 process.on('SIGHUP',function(){
 	logHandler.log('reload',null);
+
+	delete require.cache[require.resolve('../servers/' + process.argv[2] + '/config.js')]
+	config = require('../servers/' + process.argv[2] + '/config.js');
+
+	if (!config.DYNAMIC){
+		process.exit(0);
+	}
+
+	var hosts = (config.DYNAMIC.HOST instanceof Array) ? config.DYNAMIC.HOST : [config.DYNAMIC.HOST];
+	var portsListed = hosts.filter(function(host){
+		return (host.host === 'localhost')
+	}).map(function(host){
+		return host.port;
+	});
+
+	if (portsListed.length === 0){
+		process.exit(0);
+	}
+
+	var portsReloaded = [];
+
 	Object.keys(children).forEach(function(port){
+
+		if (port in portsListed){
+			portsReloaded.push(port);
+		}
+
 		child = children[port];
 		child.removeAllListeners("exit");
-		process.kill(child.pid,"SIGKILL");
-		childHandler('reload',port,null);
+		child.on('exit',function(){
+			if (port in portsListed){
+				childHandler('reload',port,null);
+			}
+		});
+		process.kill(child.pid,"SIGINT");
 	});
+
+	portsListed.forEach(function(port){
+		if (!(port in portsReloaded)){
+			childHandler('reload',port,null);
+		}
+	})
 });
 
 //If we have a dynamic site
 if (config.DYNAMIC){
 
 	//Get the instances we will have and in which ports
-	var hosts = (config.DYNAMICHOST instanceof Array) ? config.DYNAMICHOST : [config.DYNAMICHOST];
+	var hosts = (config.DYNAMIC.HOST instanceof Array) ? config.DYNAMIC.HOST : [config.DYNAMIC.HOST];
 
 	hostamount = 0;
 	//for every host we have

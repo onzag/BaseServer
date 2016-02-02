@@ -6,6 +6,7 @@ var port = process.argv[3];
 
 //CREATE EXPRESS APP
 var app = express();
+var httpServer;
 handler(app,function(err){
 
 	if (err){
@@ -13,7 +14,13 @@ handler(app,function(err){
 		process.exit(1);
 	}
 
-	var httpServer = http.createServer(app).listen(port,'localhost',function(){
+	httpServer = http.createServer(app).listen(port,'localhost',function(){
 		console.log("Server running at port %s",httpServer.address().port)
 	});
 });
+
+process.on('SIGINT',function(){
+	httpServer.close(function(){
+		process.exit(0);
+	});
+})

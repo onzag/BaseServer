@@ -32,62 +32,68 @@ module.exports = {
 						// so 404 is basically only for static serving
 						// and 502 is for when all the gateways die
 
-	DYNAMIC:true,				//allow dyanmic interaction (proxy)
+	DYNAMIC:{				//allow dyanmic interaction (proxy)
 
-	//Where to redirect requests (only matter if DYNAMIC)
-	//Will use an algorithm to pick from the following servers
-	//Redundancy servers
-	DYNAMICHOST:[
-		{
-			host:'localhost',	//internal host (will require a handler)
-			port:8001
-		},
-		{
-			host:'localhost',	//internal host (will require a handler)
-			port:8002
-		},
-		{
-			host:'192.168.1.7',	//external host
-			port:80,
-		}
-	],
+		//Will use an algorithm to pick from the following servers
+		//Redundancy servers
+		HOST:[
+			{
+				host:'localhost',	//internal host (will require a handler)
+				port:8001
+			},
+			{
+				host:'localhost',	//internal host (will require a handler)
+				port:8002
+			},
+			{
+				host:'192.168.1.7',	//external host
+				port:80,
+			}
+		],
 
-	//Only redirect requests to the dynamic part if the url starts with dynamic
-	DYNAMICURL:'/dynamic',
+		//Only redirect requests to the dynamic part if the url starts with dynamic
+		URL:'/dynamic',
 
-	//Only redirect requests to the dynamic part if the url ends with html (Regexp)
-	DYNAMICURL:/\.html/,
+		//Only redirect requests to the dynamic part if the url ends with html (Regexp)
+		URL:/\.html/,
 
-	//Both at the same time
-	DYNAMICURL:[/\.html/,'/dynamic'],
+		//Both at the same time
+		URL:[/\.html/,'/dynamic'],
+		
+	}
 
-	STATIC:true,				//allow static interaction (static files in a location)
+	
 
-	STATICURL:'/',				//static url that will be used to choose as file service
+	STATIC:{				//allow static interaction if set (static files in a location)
+
+		URL:'/',			//static url that will be used to choose as file service
 						//dynamic urls has predilection, so if you set '/api/v1' to be dynamic
 						//and '/' to be static, then api/v1 will still be dynamic
 
-	STATICURL:[/\.css/,'/static'],		//css and files in /static are to be static
+		URL:[/\.css/,'/static'],	//css and files in /static are to be static
 
-	STATICFOLDER:'staticfiles', 		//where to seek for static files, inside the server folder
+		FOLDER:'staticfiles', 		//where to seek for static files, inside the server folder
 
-	STATICFOLDER:['css','general'], 	//and considering the previous STATICURL array option, the .css will match
+		FOLDER:['css','general'], 	//and considering the previous STATICURL array option, the .css will match
 						//the first path and the static the second path
 						//note that these folders must be inside the server folder
 
-	STATICLIFETIME:"1d",			//the lifetime of the cache for everything
-	STATICLIFETIME:["1s","1d"],		//per url/location as well
+		LIFETIME:"1d",			//the lifetime of the cache for everything
+
+		LIFETIME:["1s","1d"],		//per url/location as well
 						//1 second for css, 1 day for things in the /static folder
 
-	STATICHEADERS:{				//headers to set for the static files
-		'keep-alive':true
-	},
-	STATICHEADERS:[
-		{
-			'keep-alive':true	//headers to set only for the first url match, eg. css
+		HEADERS:{				//headers to set for the static files
+			'keep-alive':true
 		},
-		{}				//for the second, eg. general
-	]
+
+		HEADERS:[
+			{
+				'keep-alive':true	//headers to set only for the first url match, eg. css
+			},
+			{}				//for the second, eg. general
+		]
+	}
 }
 ```
 
@@ -172,17 +178,18 @@ When you have your fresh copy of this base server the actions you should do are 
 
  1. Make sure nginx is installed
  2. Run `npm install`
- 3. Modify the files in servers as required by you
- 4. Run `bash nginx.sh` in order to update nginx configuration
- 5. Test one of your server by running `bash test.sh myserver.com` if you're local testing, remember to add the /etc/hosts entry
- 6. Start one of the servers by running `bash start.sh myserver.com` it will detach your console and create a process file
- 7. List your active servers with `bash list.sh`
- 8. Kill your server with `bash stop.sh myserver.com`
- 9. Add a automated script to run `bash respawn.sh` in the directory of the scripts
- 10. Start one server again and turn off your computer electricity, or cause a kernel panic, or just kill the process of the master process abruptly.
- 11. Restart your computer, or just run `respawn.sh` and the server should be back to life.
- 12. Modify your code live.
- 13. Do `bash reload.sh myserver.com` and you should be able to see the updates
+ 3. Run `bash create.sh myserver.com`
+ 4. Modify the files in servers as required by you
+ 5. Run `bash nginx.sh` in order to update nginx configuration
+ 6. Test one of your server by running `bash test.sh myserver.com` if you're local testing, remember to add the /etc/hosts entry
+ 7. Start one of the servers by running `bash start.sh myserver.com` it will detach your console and create a process file
+ 8. List your active servers with `bash list.sh`
+ 9. Kill your server with `bash stop.sh myserver.com`
+ 10. Add a automated script to run `bash respawn.sh` in the directory of the scripts
+ 11. Start one server again and turn off your computer electricity, or cause a kernel panic, or just kill the process of the master process abruptly.
+ 12. Restart your computer, or just run `respawn.sh` and the server should be back to life.
+ 13. Modify your code live.
+ 14. Do `bash reload.sh myserver.com` and you should be able to see the updates
 
 ## Add SSL support
 

@@ -22,6 +22,11 @@ fs.readdirSync('./security').forEach(function(folder){
 var router = "";
 var prerouter = "";
 fs.readdirSync('./servers').forEach(function(domain){
+
+	if (domain.indexOf('.') === 0){
+		return;
+	}
+
 	var ssldata;
 	for (regex in ssl){
 		var nregex = "^" + regex.replace(/\*/,'\\w+').replace(/\./,'\\.') + "$";
@@ -40,20 +45,19 @@ fs.readdirSync('./servers').forEach(function(domain){
 		router += "server {\n\tlisten 80;\n\tserver_name " + domain + ";";
 	}
 	
-	
 	if (config.DYNAMIC){
-		if (!(config.DYNAMICURL instanceof Array)){
-			config.DYNAMICURL = [config.DYNAMICURL];
+		if (!(config.DYNAMIC.URL instanceof Array)){
+			config.DYNAMIC.URL = [config.DYNAMIC.URL];
 		}
 
-		config.DYNAMICURL.forEach(function(dyn){
+		config.DYNAMIC.URL.forEach(function(dyn){
 			if (dyn instanceof RegExp){
 				router += "\n\tlocation ~ " + dyn.source + " {";
 			} else {
 				router += "\n\tlocation " + dyn + " {";
 			}
 
-			hosts = (config.DYNAMICHOST instanceof Array) ? config.DYNAMICHOST : [config.DYNAMICHOST];
+			hosts = (config.DYNAMIC.HOST instanceof Array) ? config.DYNAMIC.HOST : [config.DYNAMIC.HOST];
 			hosts = hosts.map(function(e){return e.host + ':' + e.port})
 
 			prerouter += "upstream serv." + domain + " {";
@@ -67,42 +71,59 @@ fs.readdirSync('./servers').forEach(function(domain){
 				"\n\t\tproxy_set_header Host $host;" +
 				"\n\t\tproxy_set_header X-NginX-Proxy true;" +
 				(config.HIDDEN ? "\n\t\tproxy_set_header X-Robots-Tag 'noindex, nofollow';" : "") +
-				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "") + 
+				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "") +
+				(config.ERR502 ? ("\n\t\terror_page 502 " + config.ERR502 + ";") : "") + 
 				"\n\t\tproxy_cache_bypass $http_upgrade;\n\t}";
 		});
 	}
 
 	if (config.STATIC){
 
-		if (!(config.STATICURL instanceof Array)){
-			config.STATICURL = [config.STATICURL];
+		if (!(config.STATIC.URL instanceof Array)){
+			config.STATIC.URL = [config.STATIC.URL];
 		}
 
-		config.STATICURL.forEach(function(st,index){
+		config.STATIC.URL.forEach(function(st,index){
 			if (st instanceof RegExp){
 				router += "\n\tlocation ~ " + st.source + " {";
 			} else {
 				router += "\n\tlocation " + st + " {";
 			}
 
-			var lifetime = config.STATICLIFETIME;
-			if (config.STATICLIFETIME instanceof Array){
-				lifetime = config.STATICLIFETIME[index];
+			var lifetime = config.STATIC.LIFETIME || "1d";
+			if (config.STATIC.LIFETIME instanceof Array){
+				if (config.STATIC.LIFETIME.length !== config.STATIC.URL.length){
+					console.error('STATIC LIFETIME array length is not the same as STATIC URL');
+					process.exit(1);
+				}
+				lifetime = config.STATIC.LIFETIME[index];
+			}
+			if (!lifetime){
+				console.warn('STATIC LIFETIME was not specified, setting it to 1 day');
 			}
 
-			var folder = config.STATICFOLDER;
-			if (config.STATICLIFETIME instanceof Array){
-				folder = config.STATICFOLDER[index];
+			var folder = config.STATIC.FOLDER;
+			if (config.STATIC.FOLDER instanceof Array){
+				if (config.STATIC.FOLDER.length !== config.STATIC.URL.length){
+					console.error('STATIC FOLDER array length is not the same as STATIC URL');
+					process.exit(1);
+				}
+				folder = config.STATIC.FOLDER[index];
+			}
+			if (!folder){
+				console.error('STATIC FOLDER was not specified');
+				process.exit(1);
 			}
 			
 			router += (lifetime ? "\n\t\texpires " + JSON.stringify(lifetime) + ";" : "") + 
 				"\n\t\troot " + process.cwd() + "/servers/" + domain + "/" + folder + ";" +
+				(config.HIDDEN ? "\n\t\tproxy_set_header X-Robots-Tag 'noindex, nofollow';" : "") +
 				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "") +
 				(config.ERR502 ? ("\n\t\terror_page 502 " + config.ERR502 + ";") : "");
 
-			var headers = config.STATICHEADERS;
-			if (config.STATICHEADERS instanceof Array){
-				headers = config.STATICHEADERS[index];
+			var headers = config.STATIC.HEADERS || {};
+			if (config.STATIC.HEADERS instanceof Array){
+				headers = config.STATIC.HEADERS[index];
 			}
 
 			if (headers){
