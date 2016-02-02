@@ -181,15 +181,16 @@ When you have your fresh copy of this base server the actions you should do are 
  3. Run `bash create.sh myserver.com`
  4. Modify the files in servers as required by you
  5. Run `bash nginx.sh` in order to update nginx configuration
- 6. Test one of your server by running `bash test.sh myserver.com` if you're local testing, remember to add the /etc/hosts entry
- 7. Start one of the servers by running `bash start.sh myserver.com` it will detach your console and create a process file
- 8. List your active servers with `bash list.sh`
- 9. Kill your server with `bash stop.sh myserver.com`
- 10. Add a automated script to run `bash respawn.sh` in the directory of the scripts
- 11. Start one server again and turn off your computer electricity, or cause a kernel panic, or just kill the process of the master process abruptly.
- 12. Restart your computer, or just run `respawn.sh` and the server should be back to life.
- 13. Modify your code live.
- 14. Do `bash reload.sh myserver.com` and you should be able to see the updates
+ 6. Microtest one of your servers by running `bash microtest.sh myserver.com 3000` where 3000 is a port example
+ 7. Test one of your server by running `bash test.sh myserver.com` if you're local testing, remember to add the /etc/hosts entry
+ 8. Start one of the servers by running `bash start.sh myserver.com` it will detach your console and create a process file
+ 9. List your active servers with `bash list.sh`
+ 10. Kill your server with `bash stop.sh myserver.com`
+ 11. Add a automated script to run `bash respawn.sh` in the directory of the scripts
+ 12. Start one server again and turn off your computer electricity, or cause a kernel panic, or just kill the process of the master process abruptly.
+ 13. Restart your computer, or just run `respawn.sh` and the server should be back to life.
+ 14. Modify your code live.
+ 15. Do `bash reload.sh myserver.com` and you should be able to see the updates
 
 ## Add SSL support
 

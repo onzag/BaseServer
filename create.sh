@@ -1,3 +1,8 @@
+if [ -z ${1+x} ]; then
+	echo "plese insert a server name";
+	exit 1
+fi
+
 name="$1"
 cd servers
 mkdir "$name"

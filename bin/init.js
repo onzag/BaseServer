@@ -24,3 +24,7 @@ process.on('SIGINT',function(){
 		process.exit(0);
 	});
 })
+
+if (process.argv[4] === 't') {
+	process.send = console.log
+}
