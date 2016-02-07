@@ -106,11 +106,15 @@ handlers exist alongside the config.js file for that server, and they're only la
 localhost usage.
 
 ```javascript
-module.exports = function(app,done){
+module.exports = function(app,done,test){
 
 	//modify the app
 	app.get('/ping',function(req,res){
-		res.end('pong');
+		if (test){
+			res.end('pong');
+		} else {
+			res.end('woops');
+		}
 	});
 
 	done(null); //you can throw an error
@@ -123,7 +127,7 @@ By default this server will send logs to an standard stream file, note that when
 that will be sent to the standard log handler for those server instances.
 
 ```javascript
-module.exports = function(app,done){
+module.exports = function(app,done,test){
 	app.get('/ping',function(req,res){
 		process.send({'action':'someone pinged me'})
 		res.end('pong');
@@ -151,6 +155,8 @@ module.exports = {
 	}
 }
 ```
+
+if you want to have logging during testing you need a `log.test.js` file, otherwise it'll go for default stdout in the console, the structure is the same.
 
 the types of message you can get are the following:
 

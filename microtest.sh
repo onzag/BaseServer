@@ -5,5 +5,5 @@ elif [ -z ${2+x} ]; then
 	echo "please insert a port name"
 else
 	echo "microtesting $1"
-	node ./bin/init.js "$1" "$2" t
+	node ./bin/init.js "$1" "$2" mt
 fi

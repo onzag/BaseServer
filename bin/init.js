@@ -4,6 +4,9 @@ var http = require('http');
 var handler = require('../servers/' + process.argv[2] + '/handler.js');
 var port = process.argv[3];
 
+var general_test = process.argv[4] === 't';
+var micro_test = process.argv[4] === 'mt';
+
 //CREATE EXPRESS APP
 var app = express();
 var httpServer;
@@ -17,7 +20,7 @@ handler(app,function(err){
 	httpServer = http.createServer(app).listen(port,'localhost',function(){
 		console.log("Server running at port %s",httpServer.address().port)
 	});
-});
+},general_test || micro_test);
 
 process.on('SIGINT',function(){
 	httpServer.close(function(){
@@ -25,6 +28,6 @@ process.on('SIGINT',function(){
 	});
 })
 
-if (process.argv[4] === 't') {
+if (micro_test) {
 	process.send = console.log
 }

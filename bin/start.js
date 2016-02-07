@@ -12,7 +12,11 @@ var children = {};
 //Try to get the log handler
 var logHandler = null;
 try {
-	logHandler = require('../servers/' + process.argv[2] + '/log.js');
+	if (!test){
+		logHandler = require('../servers/' + process.argv[2] + '/log.js');
+	} else {
+		logHandler = require('../servers/' + process.argv[2] + '/log.test.js');
+	}
 } catch (e){
 	if (!test){
 		var logstream = fs.createWriteStream('./log/' + servername + '.log', {'flags': 'a'});
@@ -145,7 +149,11 @@ if (config.DYNAMIC){
 			hostamount+=1;
 
 			//we try to initializate the handler.js at the given port
-			var child = cp.fork('./bin/init.js', [process.argv[2],port]);
+			var args = [process.argv[2],port];
+			if (test){
+				args.push('t');
+			}
+			var child = cp.fork('./bin/init.js',args);
 
 			//put the listeners for logging
 			child.on('exit',function(code){
