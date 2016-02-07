@@ -71,18 +71,48 @@ module.exports = {
 EOF
 
 cat << EOF > handler.js
-module.exports = function(app,done){
+module.exports = function(app,done,test){
 	app.get('/dynamic/ping',function(req,res){
 
 		// Send log messages, any type supported
 		process.send('getting pinged')
 
-		res.end('pong');
+		if (test){
+			res.end('pong (test mode)');
+		} else {
+			res.end('pong');
+		}
 	});
 
 	// Callback error if required
 	done(null);
 }
+
+//Minitest fallback (add express to your devDependencies if you want this behaviour)
+function main(){
+	var express = require('express');
+	var app = express();
+
+	module.exports(app,function(err){
+		if (err){
+			throw err;
+		} else {
+			app.listen(process.argv[2] || 8000);
+		}
+	},true);
+
+	process.on('SIGINT',function(){
+		app.close(function(){
+			process.exit(0);
+		});
+	});
+	process.send = console.log;
+}
+
+if (require.main === module) {
+    main();
+}
+
 EOF
 
 mkdir contents
