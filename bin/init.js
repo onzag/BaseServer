@@ -9,15 +9,15 @@ var micro_test = process.argv[4] === 'mt';
 
 //CREATE EXPRESS APP
 var app = express();
-var httpServer;
-handler(app,function(err){
+var httpServer = http.createServer(app);
+handler(app,httpServer,function(err){
 
 	if (err){
 		console.error(err);
 		process.exit(1);
 	}
 
-	httpServer = http.createServer(app).listen(port,'localhost',function(){
+	httpServer.listen(port,'localhost',function(){
 		console.log("Server running at port %s",httpServer.address().port)
 	});
 },general_test || micro_test);
