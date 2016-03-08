@@ -50,19 +50,19 @@ fs.readdirSync('./servers').forEach(function(domain){
 			config.DYNAMIC.URL = [config.DYNAMIC.URL];
 		}
 
+		var hosts = (config.DYNAMIC.HOST instanceof Array) ? config.DYNAMIC.HOST : [config.DYNAMIC.HOST];
+		hosts = hosts.map(function(e){return e.host + ':' + e.port})
+
+		prerouter += "upstream serv." + domain + " {";
+		prerouter += "\n\tleast_conn;\n\tserver ";
+		prerouter += hosts.join(';\n\tserver ') + ";\n}\n";
+
 		config.DYNAMIC.URL.forEach(function(dyn){
 			if (dyn instanceof RegExp){
 				router += "\n\tlocation ~ " + dyn.source + " {";
 			} else {
 				router += "\n\tlocation " + dyn + " {";
 			}
-
-			hosts = (config.DYNAMIC.HOST instanceof Array) ? config.DYNAMIC.HOST : [config.DYNAMIC.HOST];
-			hosts = hosts.map(function(e){return e.host + ':' + e.port})
-
-			prerouter += "upstream serv." + domain + " {";
-			prerouter += "\n\tleast_conn;\n\tserver ";
-			prerouter += hosts.join(';\n\tserver ') + ";\n}\n";
 
 			router += "\n\t\tproxy_pass http://serv." + domain  + ";" +
 				"\n\t\tproxy_http_version 1.1;" +
