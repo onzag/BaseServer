@@ -90,6 +90,8 @@ fs.readdirSync('./servers').forEach(function(domain){
 				router += "\n\tlocation " + st + " {";
 			}
 
+			router += '\n\t\tcharset utf-8;';
+
 			var lifetime = config.STATIC.LIFETIME || "1d";
 			if (config.STATIC.LIFETIME instanceof Array){
 				if (config.STATIC.LIFETIME.length !== config.STATIC.URL.length){
