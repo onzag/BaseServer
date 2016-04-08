@@ -73,7 +73,7 @@ fs.readdirSync('./servers').forEach(function(domain){
 				(config.HIDDEN ? "\n\t\tproxy_set_header X-Robots-Tag 'noindex, nofollow';" : "") +
 				(config.ERR404 ? ("\n\t\terror_page 404 " + config.ERR404 + ";") : "") +
 				(config.ERR502 ? ("\n\t\terror_page 502 " + config.ERR502 + ";") : "") +
-				(config.MAX ? ("\n\t\tclient_max_body_size " + config.MAX "M;") : "") +
+				(config.MAX ? ("\n\t\tclient_max_body_size " + config.MAX + "M;") : "") +
 				"\n\t\tproxy_cache_bypass $http_upgrade;\n\t}";
 		});
 	}
