@@ -32,6 +32,8 @@ module.exports = {
 						// so 404 is basically only for static serving
 						// and 502 is for when all the gateways die
 
+	MAX:10,					//Maximum megabytes allowed in body
+
 	DYNAMIC:{				//allow dyanmic interaction (proxy)
 
 		//Will use an algorithm to pick from the following servers
